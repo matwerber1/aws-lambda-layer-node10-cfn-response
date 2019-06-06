@@ -30,8 +30,8 @@ $ ./deploy.sh
 # Production Usage
 
 1. Create a Lambda Layer
-2. Associate the Lambda Layer to your Lambda function(s) 
-3. Import the sync or async version from the layer:
+2. Associate the Lambda Layer to your Lambda function(s) that act as custom CloudFormation resources
+3. From within the Lambda(s), import the sync or async version from the layer:
     ```
     # async version
     const cfnResponse = require('cfn-response-async');
