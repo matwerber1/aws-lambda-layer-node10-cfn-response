@@ -7,13 +7,13 @@ Resources:
     Type: 'Custom::S3Bucket'
     Properties:
       ServiceToken: !GetAtt CustomSyncProvider.Arn
-      BucketName: !Sub 'demo-cfn-bucket-${AWS::AccountId}-sync3'
+      BucketName: !Sub 'demo-cfn-bucket-${AWS::AccountId}-sync'
 
   CustomS3BucketAsync:
     Type: 'Custom::S3Bucket'
     Properties:
       ServiceToken: !GetAtt CustomAsyncProvider.Arn
-      BucketName: !Sub 'demo-cfn-bucket-${AWS::AccountId}-async3'
+      BucketName: !Sub 'demo-cfn-bucket-${AWS::AccountId}-async'
 
   CustomSyncProvider:
     Type: AWS::Serverless::Function 

@@ -1,6 +1,6 @@
 BUCKET=your_s3_bucket_name
 
-STACK_NAME=lambda-layer-cfn-response-demo
+STACK_NAME=lambda-layer-cfn-response-demo3
 
 sam package \
     --s3-bucket $BUCKET \

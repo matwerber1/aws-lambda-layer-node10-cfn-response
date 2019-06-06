@@ -10,7 +10,7 @@ The CloudFormation template also includes a demo CloudFormation custom resource 
 2. [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) installed and configured
 3. Pre-existing S3 bucket to which CloudFormation assets (templates) will be uploaded.
 
-## Deployment
+## Demo Deployment
 
 1. Open **deploy.sh** and specify the bucket to which the SAM CLI will upload your CloudFormation templates for processing:
 
@@ -26,3 +26,40 @@ $ ./deploy.sh
 ```
 
 3. Navigate to the [CloudFormation console](https://console.aws.amazon.com/cloudformation/home) and verify that the stack created and that the custom resources created two S3 buckets.
+
+# Production Usage
+
+1. Create a Lambda Layer
+2. Associate the Lambda Layer to your Lambda function(s) 
+3. Import the sync or async version from the layer:
+    ```
+    # async version
+    const cfnResponse = require('cfn-response-async');
+
+    # sync version
+    const cfnResponse = require('cfn-response-sync');
+    ```
+
+4. When you are ready to send a SUCCESS or FAILED response to CloudFormation from your custom Lambda, invoke the send() method:
+
+    ```
+    # async verison
+    return await cfnResponse.send(event, context, responseStatus, responseData, physicalResourceId, noEcho);
+
+    # sync version
+    cfnResponse.send(event, context, responseStatus, responseData, physicalResourceId, noEcho);
+    callback(null);
+    ```
+
+    Apart from the fact that the async version of send() returns a promise, the two functions above are identical. The other two
+    differences to remember is that with an async version of Lambda, you end the function by calling ```return;``` or by ```throw(err)```,
+    and with the sync version, the function continues until the event loop is empty (callback is used, too). 
+    Read [AWS Lambda Function Handler in Node.js](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html) for more info. 
+
+6. event, context, responseStatus are required for all events. 
+7. physicalResourceId is required for successful CREATE and UPDATE events.
+7. responseData and noEcho are optional parameters.
+
+## License
+
+[MIT License](https://opensource.org/licenses/MIT)

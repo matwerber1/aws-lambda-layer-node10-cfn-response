@@ -44,7 +44,7 @@ exports.handler = function (event, context, callback) {
             if (err) {
                 let responseData = { Error: "Delete bucket failed" };
                 console.log(responseData.Error + ":\n", err);
-                cfnResponse.send(event, context, "FAILED", responseData);
+                cfnResponse.send(event, context, "FAILED", responseData); 
                 callback(null);
             }
             else {
