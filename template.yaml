@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Demo cfn-response Lambda Layer
+
+Resources:
+  CustomS3BucketSync:
+    Type: 'Custom::S3Bucket'
+    Properties:
+      ServiceToken: !GetAtt CustomSyncProvider.Arn
+      BucketName: !Sub 'demo-cfn-bucket-${AWS::AccountId}-sync3'
+
+  CustomS3BucketAsync:
+    Type: 'Custom::S3Bucket'
+    Properties:
+      ServiceToken: !GetAtt CustomAsyncProvider.Arn
+      BucketName: !Sub 'demo-cfn-bucket-${AWS::AccountId}-async3'
+
+  CustomSyncProvider:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: lambda/syncResource/
+      Handler: index.handler
+      Runtime: nodejs10.x
+      Layers:
+        - !Ref CloudFormationResponseLayer
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action: 
+              - s3:CreateBucket
+              - s3:DeleteBucket
+            Resource:
+              - !Sub 'arn:aws:s3:::demo-cfn-bucket-${AWS::AccountId}-*'
+
+  CustomAsyncProvider:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: lambda/asyncResource/
+      Handler: index.handler
+      Runtime: nodejs10.x
+      Layers:
+        - !Ref CloudFormationResponseLayer
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action: 
+              - s3:CreateBucket
+              - s3:DeleteBucket
+            Resource:
+              - !Sub 'arn:aws:s3:::demo-cfn-bucket-${AWS::AccountId}-*'
+
+
+  CloudFormationResponseLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: node10-cfn-response
+      Description: Contains a sync and async helper function to send responses to CloudFormation for custom resources
+      ContentUri: lambda-layers/
+      CompatibleRuntimes:
+        - nodejs10.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
